@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(opusenc C)
 
 option(INSTALL_CMAKE_PACKAGE_MODULE "Install CMake package configuration module" ON)
+option(BUILD_EXAMPLES "Build examples" ON)
 
 find_package(Opus REQUIRED)
 
@@ -49,6 +50,17 @@ target_sources(opusenc PRIVATE
     src/unicode_support.h
 )
 target_link_libraries(opusenc PUBLIC Opus::opus)
+
+if (BUILD_EXAMPLES)
+    add_executable(opusenc_example examples/opusenc_example.c)
+    target_compile_definitions(opusenc_example PRIVATE
+        $<$<PLATFORM_ID:Windows>:_UNICODE>
+        $<$<PLATFORM_ID:Windows>:UNICODE>
+        $<$<PLATFORM_ID:Windows>:_CRT_SECURE_NO_WARNINGS>
+        $<$<PLATFORM_ID:Windows>:WIN32>
+    )
+    target_link_libraries(opusenc_example PRIVATE opusenc)
+endif ()
 
 include(GNUInstallDirs)
 
