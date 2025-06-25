@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.10)
 project(opusenc C)
 
+option(INSTALL_CMAKE_PACKAGE_MODULE "Install CMake package configuration module" ON)
+
 find_package(Opus REQUIRED)
 
 execute_process(
@@ -47,3 +49,19 @@ target_sources(opusenc PRIVATE
     src/unicode_support.h
 )
 target_link_libraries(opusenc PUBLIC Opus::opus)
+
+include(GNUInstallDirs)
+
+install(TARGETS opusenc EXPORT OpusEncTargets
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+)
+install(FILES include/opusenc.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opus)
+
+if (INSTALL_CMAKE_PACKAGE_MODULE)
+    install(EXPORT OpusEncTargets
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/opusenc
+        NAMESPACE OpusEnc::
+    )
+endif ()
